@@ -1,0 +1,28 @@
+body {
+    background-color: #000020; /* Dark Blue */
+    color: #00FF00; /* Laser Green */
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    padding-top: 50px;
+}
+h1 {
+    text-shadow: 0 0 10px #00FF00;
+}
+form {
+    margin-top: 20px;
+}
+input[type="file"] {
+    border: 1px solid #00FF00;
+    background-color: #000020;
+    color: #00FF00;
+    padding: 10px;
+}
+input[type="submit"] {
+    border: 1px solid #00FF00;
+    background-color: #00FF00;
+    color: #000020;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+}
