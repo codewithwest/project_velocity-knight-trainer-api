@@ -1,5 +1,23 @@
 {
-  "version": 2,
-  "builds": [{ "src": "main.py", "use": "@vercel/python" }],
-  "routes": [{ "src": "/(.*)", "dest": "/main.py" }]
-}
+        "version": 2,
+        "builds": [
+          {
+            "src": "main.py",
+            "use": "@vercel/python"
+          },
+          {
+            "src": "tailwind.config.js",
+            "use": "@vercel/static-build",
+            "config": {
+              "installCommand": "npm install",
+              "buildCommand": "npx tailwindcss -i ./app/static/css/index.css -o ./src/index.css --minify"
+            }
+          }
+        ],
+        "routes": [
+          {
+            "src": "/(.*)",
+            "dest": "/main.py"
+          }
+        ]
+      }

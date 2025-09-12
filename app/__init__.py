@@ -6,7 +6,7 @@ from flask_pymongo import PyMongo
 mongo = PyMongo()
 
 def create_app():
-    app = Flask(__name__, instance_relative_config=True, static_folder='static', template_folder='templates')
+    app = Flask(__name__, instance_relative_config=True)
 
     # Configurations can be set here, e.g., from a config file
     app.config.from_object(Config)
