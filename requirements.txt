@@ -6,3 +6,6 @@ autopep8
 flask
 gunicorn
 requests
+pymongo
+dnspython
+Flask-PyMongo
