@@ -13,3 +13,4 @@ venv.bak/
 **.pyc
 uploads/*
 node_modules
+*.pdf

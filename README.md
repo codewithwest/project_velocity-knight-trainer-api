@@ -1,7 +1,7 @@
-# Flask Web App Starter
+# YOUR PROJECT TITLE
 
-A Flask starter template as per [these docs](https://flask.palletsprojects.com/en/3.0.x/quickstart/#a-minimal-application).
+#### Video Demo:
 
-## Getting Started
+#### Description:
 
-Previews should run automatically when starting a workspace.
+This is a media manager project that allows login and register and also you can upload pdf and images and also be able to view them on login and logout

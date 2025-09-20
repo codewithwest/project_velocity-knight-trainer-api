@@ -16,8 +16,8 @@
             </div>
           </div>
           <div>
-            <h1 class="text-xl bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent font-mono tracking-wide">
-              VELOCITY_KNIGHT_TRAINER
+            <h1 class="text-md sm:text-xl bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent font-mono tracking-wide">
+              VELOCITY_KNIGHT_TRAINER_API
             </h1>
             <p class="text-sm text-slate-400 font-mono">FILE_API_MANAGEMENT_SYSTEM.v2.1</p>
           </div>
@@ -30,9 +30,9 @@
             <span class="text-xs font-mono text-slate-400">SYS_ONLINE</span>
           </div>
           
-          <div class="flex items-center gap-3 px-3 py-2 bg-slate-800/50 rounded-lg border border-slate-600">
+          <div class="flex items-center gap-2 px-2 py-1 bg-slate-800/50 rounded-lg border border-slate-600 sm:px-3 sm:py-2" >
             <div class="border border-cyan-500/30 rounded-full p-1">
-                <div class="w-6 h-6 rounded-full bg-slate-700 text-cyan-400 font-mono flex items-center justify-center">
+                <div class="w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-slate-700 text-cyan-400 font-mono flex items-center justify-center">
                     {{ user.name[0].upper() if user and user.name else 'U' }}
                 </div>
             </div>
@@ -42,11 +42,12 @@
             </div>
           </div>
           
-          <a href="{{ url_for('main.index') }}" 
+          <a href="{{ url_for('index') }}" 
             class="flex items-center text-slate-400 hover:text-red-400 hover:bg-red-500/10 border border-slate-600 hover:border-red-500/50 font-mono p-2 rounded-md"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>
-            LOGOUT
+            <span class="hidden sm:block">LOGOUT</span>
+            
           </a>
         </div>
       </div>
@@ -75,7 +76,7 @@
       <!-- PDF Processor Tab -->
       <div x-show="activeTab === 'pdf'" class="p-6 bg-slate-900/50 rounded-xl border border-slate-700/50 backdrop-blur-sm">
         <h2 class="text-xl text-cyan-400 font-mono mb-4">PDF_PROCESSOR</h2>
-        <form method="POST" action="{{ url_for('main.dashboard') }}" enctype="multipart/form-data" class="space-y-6">
+        <form method="POST" action="{{ url_for('dashboard') }}" enctype="multipart/form-data" class="space-y-6">
             <input type="hidden" name="upload_type" value="pdf">
             <div class="border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 border-slate-600 hover:border-cyan-500/50 bg-slate-800/30">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto h-16 w-16 text-cyan-400 mb-4 animate-pulse"><path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M2.5 17a.5.5 0 0 0 0 1h1.167a.5.5 0 0 1 .5.5v1.167a.5.5 0 0 0 1 0V17a.5.5 0 0 0 0-1H2.5Z"></path><path d="M10.167 17.833a.5.5 0 0 1 0-1H11.5a.5.5 0 0 0 0-1h-1.167a.5.5 0 0 1 0-1h1.167a.5.5 0 0 0 .5-.5V14a.5.5 0 0 1 1 0v.333a.5.5 0 0 0 .5.5h.333a.5.5 0 0 1 0 1h-.333a.5.5 0 0 0-.5.5v.333a.5.5 0 0 1-1 0v-.333a.5.5 0 0 0-.5-.5h-1.167Z"></path><path d="M17 14.5a.5.5 0 0 0-1 0v3a.5.5 0 0 0 1 0v-3Z"></path><path d="M17.5 14a.5.5 0 0 1 1 0v3a.5.5 0 0 1-1 0v-3Z"></path></svg>
@@ -117,7 +118,7 @@
                     <div class="flex items-center gap-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-10 w-10 text-red-400"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                         <div>
-                            <p class="text-slate-200 font-mono">{{ file }}</p>
+                            <p class="text-slate-200 font-mono">{{ file.get('filename') }}</p>
                             <span class="text-xs font-mono text-slate-400">UPLOADED</span>
                         </div>
                     </div>
@@ -141,7 +142,7 @@
       <!-- Image Analyzer Tab -->
       <div x-show="activeTab === 'image'" class="p-6 bg-slate-900/50 rounded-xl border border-slate-700/50 backdrop-blur-sm">
         <h2 class="text-xl text-purple-400 font-mono mb-4">IMG_ANALYZER</h2>
-        <form method="POST" action="{{ url_for('main.dashboard') }}" enctype="multipart/form-data" class="space-y-6">
+        <form method="POST" action="{{ url_for('dashboard') }}" enctype="multipart/form-data" class="space-y-6">
             <input type="hidden" name="upload_type" value="image">
             <div class="border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 border-slate-600 hover:border-purple-500/50 bg-slate-800/30">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto h-16 w-16 text-purple-400 mb-4 animate-pulse"><path d="M12 3c-5.223 0-9.453 4.23-9.453 9.453S6.777 21.906 12 21.906s9.453-4.23 9.453-9.453S17.223 3 12 3z"></path><path d="M12 15.656a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5z"></path><path d="M12 3v.01"></path></svg>
@@ -171,10 +172,10 @@
                 {% for file in uploaded_files.image %}
                 <div class="bg-slate-800/50 border-slate-600/50 backdrop-blur-sm overflow-hidden rounded-lg">
                     <div class="aspect-video bg-slate-900 overflow-hidden">
-                        <img src="{{ url_for('static', filename='uploads/image/' + file) }}" alt="{{ file }}" class="w-full h-full object-cover">
+                        <img src="{{ url_for('static', filename='uploads/image/' + file.get('filename')) }}" alt="{{ file.get('filename') }}" class="w-full h-full object-cover">
                     </div>
                     <div class="p-4">
-                        <p class="text-slate-200 font-mono truncate">{{ file }}</p>
+                        <p class="text-slate-200 font-mono truncate">{{ file.get('filename') }}</p>
                         <div class="flex items-center justify-between text-xs text-slate-400 font-mono mt-2">
                             <span>UPLOADED</span>
                         </div>

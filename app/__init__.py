@@ -1,27 +1,28 @@
-from flask import Flask
-import os
-from config import Config
-from flask_pymongo import PyMongo
+# from flask import Flask
+# import os
+# from config import Config
+# from flask_pymongo import PyMongo
 
-mongo = PyMongo()
+# mongo = PyMongo()
 
-def create_app():
-    app = Flask(__name__, instance_relative_config=True)
 
-    # Configurations can be set here, e.g., from a config file
-    app.config.from_object(Config)
+# def create_app():
+#     app = Flask(__name__, instance_relative_config=True)
 
-    # Initialize PyMongo
-    mongo.init_app(app)
+#     # Configurations can be set here, e.g., from a config file
+#     app.config.from_object(Config)
 
-    # Ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+#     # Initialize PyMongo
+#     mongo.init_app(app)
 
-    # Register Blueprints here
-    from .main import main as main_blueprint
-    app.register_blueprint(main_blueprint)
+#     # Ensure the instance folder exists
+#     try:
+#         os.makedirs(app.instance_path)
+#     except OSError:
+#         pass
 
-    return app
+#     # Register Blueprints here
+#     from .main import main as main_blueprint
+#     app.register_blueprint(main_blueprint)
+
+#     return app

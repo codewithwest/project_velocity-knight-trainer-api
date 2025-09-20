@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}My App{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link href="{{url_for('static',filename='css/output.css')}}" rel="stylesheet">
     <style>
         body {
             /* These styles are from the main div in App.tsx */
             min-height: 100vh;
             background-color: oklch(0.129 0.042 264.695); /* bg-slate-950 */
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         .animated-bg {
