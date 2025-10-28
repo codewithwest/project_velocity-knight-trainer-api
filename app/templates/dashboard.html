@@ -3,7 +3,14 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-transparent" x-data="{ activeTab: 'pdf' }">
+<div class="min-h-screen bg-transparent" x-data="{
+    activeTab: 'pdf',
+    user: null,
+    uploadedFiles: {
+        pdf: [],
+        image: []
+    }
+}" x-init="initDashboard()">
   <!-- Header -->
   <header class="border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50">
     <div class="container mx-auto px-4 py-4">
@@ -24,31 +31,39 @@
         </div>
         
         <div class="flex items-center gap-4">
-          <!-- System Status -->
           <div class="hidden lg:flex items-center gap-2 px-3 py-1 bg-slate-800/50 rounded-lg border border-slate-600">
             <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             <span class="text-xs font-mono text-slate-400">SYS_ONLINE</span>
           </div>
           
-          <div class="flex items-center gap-2 px-2 py-1 bg-slate-800/50 rounded-lg border border-slate-600 sm:px-3 sm:py-2" >
-            <div class="border border-cyan-500/30 rounded-full p-1">
-                <div class="w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-slate-700 text-cyan-400 font-mono flex items-center justify-center">
-                    {{ user.name[0].upper() if user and user.name else 'U' }}
-                </div>
+          <template x-if="user">
+            <div class="flex items-center gap-2 px-2 py-1 bg-slate-800/50 rounded-lg border border-slate-600 sm:px-3 sm:py-2" >
+              <div class="border border-cyan-500/30 rounded-full p-1">
+                  <div class="w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-slate-700 text-cyan-400 font-mono flex items-center justify-center" x-text="user.name ? user.name[0].toUpperCase() : 'U'">
+                  </div>
+              </div>
+              <div class="hidden sm:block">
+                <p class="text-sm text-cyan-400 font-mono" x-text="user.name || 'USER'"></p>
+                <p class="text-xs text-slate-400 font-mono" x-text="user.email || ''"></p>
+              </div>
             </div>
-            <div class="hidden sm:block">
-              <p class="text-sm text-cyan-400 font-mono">{{ user.name if user else 'USER' }}</p>
-              <p class="text-xs text-slate-400 font-mono">{{ user.email if user else '' }}</p>
-            </div>
-          </div>
+          </template>
           
-          <a href="{{ url_for('index') }}" 
+          <template x-if="user && user.is_admin">
+            <a href="{{ url_for('main.register') }}"
+              class="flex items-center text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 border border-slate-600 hover:border-cyan-500/50 font-mono p-2 rounded-md"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>
+              <span class="hidden sm:block">CREATE_USER</span>
+            </a>
+          </template>
+
+          <button @click="logout()" 
             class="flex items-center text-slate-400 hover:text-red-400 hover:bg-red-500/10 border border-slate-600 hover:border-red-500/50 font-mono p-2 rounded-md"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>
             <span class="hidden sm:block">LOGOUT</span>
-            
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -56,7 +71,6 @@
 
   <!-- Main Content -->
   <main class="container mx-auto px-4 py-8">
-    <!-- Tab Navigation -->
     <div class="mb-8 border-b border-slate-700/50">
       <nav class="-mb-px flex space-x-8" aria-label="Tabs">
         <a href="#" @click.prevent="activeTab = 'pdf'" class="whitespace-nowrap pb-4 px-1 border-b-2 font-mono" :class="{ 'border-cyan-500 text-cyan-400': activeTab === 'pdf', 'border-transparent text-slate-400 hover:text-slate-300 hover:border-slate-500': activeTab !== 'pdf' }">
@@ -71,141 +85,106 @@
       </nav>
     </div>
 
-    <!-- Tab Content -->
     <div>
-      <!-- PDF Processor Tab -->
-      <div x-show="activeTab === 'pdf'" class="p-6 bg-slate-900/50 rounded-xl border border-slate-700/50 backdrop-blur-sm">
-        <h2 class="text-xl text-cyan-400 font-mono mb-4">PDF_PROCESSOR</h2>
-        <form method="POST" action="{{ url_for('dashboard') }}" enctype="multipart/form-data" class="space-y-6">
-            <input type="hidden" name="upload_type" value="pdf">
-            <div class="border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 border-slate-600 hover:border-cyan-500/50 bg-slate-800/30">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto h-16 w-16 text-cyan-400 mb-4 animate-pulse"><path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M2.5 17a.5.5 0 0 0 0 1h1.167a.5.5 0 0 1 .5.5v1.167a.5.5 0 0 0 1 0V17a.5.5 0 0 0 0-1H2.5Z"></path><path d="M10.167 17.833a.5.5 0 0 1 0-1H11.5a.5.5 0 0 0 0-1h-1.167a.5.5 0 0 1 0-1h1.167a.5.5 0 0 0 .5-.5V14a.5.5 0 0 1 1 0v.333a.5.5 0 0 0 .5.5h.333a.5.5 0 0 1 0 1h-.333a.5.5 0 0 0-.5.5v.333a.5.5 0 0 1-1 0v-.333a.5.5 0 0 0-.5-.5h-1.167Z"></path><path d="M17 14.5a.5.5 0 0 0-1 0v3a.5.5 0 0 0 1 0v-3Z"></path><path d="M17.5 14a.5.5 0 0 1 1 0v3a.5.5 0 0 1-1 0v-3Z"></path></svg>
-                <h3 class="text-xl mb-2 text-cyan-400 font-mono">PDF_UPLOAD_ZONE</h3>
-                <p class="text-slate-400 mb-4 font-mono text-sm">
-                    &gt; DRAG_AND_DROP_PDF_FILES_OR_CLICK_TO_SELECT<br/>
-                    &gt; SUPPORTED_FORMAT: .PDF<br/>
-                </p>
-                <input type="file" name="file" accept=".pdf" class="hidden" id="pdf-upload"/>
-                <label for="pdf-upload" class="cursor-pointer inline-flex items-center justify-center bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white border-0 font-mono tracking-wide relative overflow-hidden group p-2 rounded-md">
-                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                    SELECT_PDF_FILES
-                </label>
-            </div>
-            <button type="submit" class="w-full flex items-center justify-center bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-0 font-mono tracking-wide relative overflow-hidden group p-2 rounded-md">
-                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><path d="M4 22h16a2 2 0 0 0 2-2V7.5L15.5 2H6a2 2 0 0 0-2 2v4"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M10.063 13.937 7.5 12.5l-2.563 1.437"></path><path d="M7.5 12.5v3.375"></path><path d="m17.5 12.5-2.563 1.437L12.375 12.5"></path><path d="M14.938 12.5v3.375"></path></svg>
-                PROCESS_DOCUMENT
-            </button>
-        </form>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="p-4 mt-4 rounded-md {{ 'bg-green-950/50 border-green-500/50 text-green-400' if category == 'success' else 'bg-red-950/50 border-red-500/50 text-red-400' }}">
-                        <p class="font-mono text-sm">{{ message }}</p>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        {% if uploaded_files.pdf %}
-        <div class="mt-8">
-            <h3 class="text-lg text-cyan-400 font-mono mb-4">UPLOADED_PDFS</h3>
-            <div class="space-y-3">
-                {% for file in uploaded_files.pdf %}
-                <div class="bg-slate-800/50 border-slate-600/50 backdrop-blur-sm p-4 rounded-lg flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-10 w-10 text-red-400"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                        <div>
-                            <p class="text-slate-200 font-mono">{{ file.get('filename') }}</p>
-                            <span class="text-xs font-mono text-slate-400">UPLOADED</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <a href="#" class="flex items-center text-xs font-mono border-slate-600 text-slate-300 hover:border-cyan-500 hover:text-cyan-400 hover:bg-cyan-500/10 p-2 rounded-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3 mr-1"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            PREVIEW
-                        </a>
-                        <a href="#" class="flex items-center text-xs font-mono border-slate-600 text-slate-300 hover:border-green-500 hover:text-green-400 hover:bg-green-500/10 p-2 rounded-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3 mr-1"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                            DOWNLOAD
-                        </a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-      </div>
-
-      <!-- Image Analyzer Tab -->
-      <div x-show="activeTab === 'image'" class="p-6 bg-slate-900/50 rounded-xl border border-slate-700/50 backdrop-blur-sm">
-        <h2 class="text-xl text-purple-400 font-mono mb-4">IMG_ANALYZER</h2>
-        <form method="POST" action="{{ url_for('dashboard') }}" enctype="multipart/form-data" class="space-y-6">
-            <input type="hidden" name="upload_type" value="image">
-            <div class="border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 border-slate-600 hover:border-purple-500/50 bg-slate-800/30">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto h-16 w-16 text-purple-400 mb-4 animate-pulse"><path d="M12 3c-5.223 0-9.453 4.23-9.453 9.453S6.777 21.906 12 21.906s9.453-4.23 9.453-9.453S17.223 3 12 3z"></path><path d="M12 15.656a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5z"></path><path d="M12 3v.01"></path></svg>
-                <h3 class="text-xl mb-2 text-purple-400 font-mono">IMAGE_UPLOAD_ZONE</h3>
-                <p class="text-slate-400 mb-4 font-mono text-sm">
-                    &gt; DRAG_AND_DROP_IMAGE_FILES_OR_CLICK_TO_SELECT<br/>
-                    &gt; SUPPORTED_FORMATS: JPG, PNG, GIF, WEBP<br/>
-                </p>
-                <input type="file" name="file" accept="image/*" class="hidden" id="image-upload"/>
-                <label for="image-upload" class="cursor-pointer inline-flex items-center justify-center bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-0 font-mono tracking-wide relative overflow-hidden group p-2 rounded-md">
-                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                    SELECT_IMAGES
-                </label>
-            </div>
-            <button type="submit" class="w-full flex items-center justify-center bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white border-0 font-mono tracking-wide relative overflow-hidden group p-2 rounded-md">
-                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><path d="M12 3c-5.223 0-9.453 4.23-9.453 9.453S6.777 21.906 12 21.906s9.453-4.23 9.453-9.453S17.223 3 12 3z"></path><path d="M12 15.656a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5z"></path><path d="M12 3v.01"></path></svg>
-                ANALYZE_IMAGE
-            </button>
-        </form>
-
-        {% if uploaded_files.image %}
-        <div class="mt-8">
-            <h3 class="text-lg text-purple-400 font-mono mb-4">UPLOADED_IMAGES</h3>
+        <div x-show="activeTab === 'pdf'">
+            <form @submit.prevent="uploadFile" action="/api/upload" method="post" enctype="multipart/form-data" class="mb-8 p-6 bg-slate-900/50 rounded-xl border border-slate-700/50 backdrop-blur-sm">
+                <input type="hidden" name="upload_type" value="pdf">
+                <input type="file" name="file" accept=".pdf" class="text-slate-400 font-mono file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100">
+                <button type="submit" class="mt-4 px-4 py-2 bg-cyan-600 text-white font-mono rounded-md hover:bg-cyan-700">Upload PDF</button>
+            </form>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {% for file in uploaded_files.image %}
-                <div class="bg-slate-800/50 border-slate-600/50 backdrop-blur-sm overflow-hidden rounded-lg">
-                    <div class="aspect-video bg-slate-900 overflow-hidden">
-                        <img src="{{ url_for('static', filename='uploads/image/' + file.get('filename')) }}" alt="{{ file.get('filename') }}" class="w-full h-full object-cover">
+                <template x-for="file in uploadedFiles.pdf" :key="file.url">
+                    <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700 flex justify-between items-center">
+                        <span class="text-slate-300 font-mono truncate" x-text="file.filename"></span>
+                        <a :href="file.url" target="_blank" class="text-cyan-400 hover:text-cyan-300 font-mono ml-4">View</a>
                     </div>
-                    <div class="p-4">
-                        <p class="text-slate-200 font-mono truncate">{{ file.get('filename') }}</p>
-                        <div class="flex items-center justify-between text-xs text-slate-400 font-mono mt-2">
-                            <span>UPLOADED</span>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
+                </template>
             </div>
         </div>
-        {% endif %}
-      </div>
 
-      <!-- Documentation Tab -->
+        <div x-show="activeTab === 'image'">
+            <form @submit.prevent="uploadFile" action="/api/upload" method="post" enctype="multipart/form-data" class="mb-8 p-6 bg-slate-900/50 rounded-xl border border-slate-700/50 backdrop-blur-sm">
+                <input type="hidden" name="upload_type" value="image">
+                <input type="file" name="file" accept="image/*" class="text-slate-400 font-mono file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
+                <button type="submit" class="mt-4 px-4 py-2 bg-purple-600 text-white font-mono rounded-md hover:bg-purple-700">Upload Image</button>
+            </form>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="file in uploadedFiles.image" :key="file.url">
+                    <div class="bg-slate-800/50 rounded-lg border border-slate-700 overflow-hidden">
+                        <img :src="file.url" :alt="file.filename" class="w-full h-48 object-cover">
+                        <div class="p-4 flex justify-between items-center">
+                            <span class="text-slate-300 font-mono truncate" x-text="file.filename"></span>
+                            <a :href="file.url" target="_blank" class="text-purple-400 hover:text-purple-300 font-mono ml-4">View</a>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
       <div x-show="activeTab === 'docs'" class="p-6 bg-slate-900/50 rounded-xl border border-slate-700/50 backdrop-blur-sm">
         <h2 class="text-xl text-green-400 font-mono mb-4">DOCUMENTATION</h2>
-        <div class="space-y-4 font-mono text-slate-400">
-            <div>
-                <h3 class="text-cyan-400">What is Velocity Knight Trainer?</h3>
-                <p>Velocity Knight Trainer is a file API management system that allows you to upload, process, and analyze files.</p>
-            </div>
-            <div>
-                <h3 class="text-cyan-400">How do I upload files?</h3>
-                <p>You can upload files by dragging and dropping them into the designated upload zones or by clicking the "SELECT" buttons.</p>
-            </div>
-            <div>
-                <h3 class="text-cyan-400">What file types are supported?</h3>
-                <p>The PDF Processor supports .pdf files, and the Image Analyzer supports .jpg, .png, .gif, and .webp files.</p>
-            </div>
         </div>
-      </div>
     </div>
   </main>
 </div>
+
+<script>
+  function initDashboard() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = "{{ url_for('main.index') }}";
+      return;
+    }
+
+    fetch('/api/user', {
+      headers: {
+        'x-access-token': token
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.email) {
+        this.user = data;
+      } else {
+        logout();
+      }
+    });
+
+    fetch('/api/files', {
+        headers: {
+            'x-access-token': token
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        this.uploadedFiles = data;
+    });
+  }
+
+  function logout() {
+    localStorage.removeItem('token');
+    window.location.href = "{{ url_for('main.index') }}";
+  }
+
+  function uploadFile(event) {
+      const token = localStorage.getItem('token');
+      const form = event.target;
+      const formData = new FormData(form);
+      
+      fetch(form.action, {
+          method: 'POST',
+          headers: {
+              'x-access-token': token
+          },
+          body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+          if(data.files) {
+              this.uploadedFiles = data.files;
+          }
+          // You can add flash message handling here
+      });
+  }
+</script>
 {% endblock %}

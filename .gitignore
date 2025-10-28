@@ -14,3 +14,6 @@ venv.bak/
 uploads/*
 node_modules
 *.pdf
+mongodb/var/*
+.idx/.data/*
+__pycache__/*

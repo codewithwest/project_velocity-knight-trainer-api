@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Register New User{% endblock %}
 
 {% block content %}
 <div class="flex items-center justify-center min-h-screen p-4 relative">
@@ -25,13 +25,8 @@
         </div>
       </div>
       <p class="text-slate-400 font-mono text-sm">
-        SECURE ACCESS TERMINAL
+        ADMIN: CREATE_NEW_USER_PROFILE
       </p>
-      <div class="flex items-center justify-center gap-1 mt-2">
-        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-        <div class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" style="animation-delay: 0.5s"></div>
-        <div class="w-2 h-2 bg-red-400 rounded-full animate-pulse" style="animation-delay: 1s"></div>
-      </div>
     </div>
     <div class="p-6">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -44,7 +39,7 @@
             {% endif %}
         {% endwith %}
       <div class="mt-6">
-        <form method="POST" action="{{ url_for('register') }}" class="space-y-5">
+        <form method="POST" class="space-y-5">
           <div class="space-y-2">
             <label for="email" class="text-cyan-400 font-mono text-sm tracking-wide">
               EMAIL_ADDRESS
@@ -55,7 +50,7 @@
                 id="email" 
                 name="email" 
                 type="email" 
-                placeholder="user@domain.sys"
+                placeholder="new_user@domain.sys"
                 class="pl-10 w-full bg-slate-800/50 border-slate-600 text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 font-mono rounded-md border p-2"
                 required 
               />
@@ -96,22 +91,17 @@
               <div class="absolute inset-0 border border-cyan-500/20 rounded-md opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none"></div>
             </div>
           </div>
-          {% if error %}
-            <div class="bg-red-950/50 border-red-500/50 text-red-400 p-3 rounded-md">
-              <p class="font-mono text-sm">{{ error }}</p>
-            </div>
-          {% endif %}
           <button 
             type="submit" 
             class="w-full flex items-center justify-center bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white border-0 font-mono tracking-wide relative overflow-hidden group p-2 rounded-md"
           >
             <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><path d="M3.5 7.5 2 10l5 2 2-5-2.5-3.5Z"></path><path d="m14 19-3 3 3 3 3-3-3-3Z"></path><path d="M22 2 12 12"></path><path d="m2 22 10-10"></path><path d="m15 6 3-3 3 3-3 3Z"></path></svg>
-            <span>EXECUTE_REGISTER</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>
+            <span>CREATE_USER_PROFILE</span>
           </button>
         </form>
         <div class="text-center mt-4">
-          <a href="{{ url_for('index') }}" class="text-cyan-400 font-mono text-sm hover:underline">Already have an account? Login</a>
+          <a href="{{ url_for('main.dashboard') }}" class="text-cyan-400 font-mono text-sm hover:underline">Return to Dashboard</a>
         </div>
       </div>
     </div>
